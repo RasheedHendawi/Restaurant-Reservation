@@ -1,11 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RestaurantReservationNew.Db.Contexts;
 using RestaurantReservationNew.Db.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RestaurantReservationNew.Db.Repositories
 {
@@ -18,6 +13,10 @@ namespace RestaurantReservationNew.Db.Repositories
             _context = context;
         }
 
+        public async Task<IEnumerable<Reservation>> GetAllAsync()
+        {
+            return await _context.Reservations.ToListAsync();
+        }
         public async Task CreateAsync(Reservation reservation)
         {
             _context.Reservations.Add(reservation);
@@ -48,6 +47,11 @@ namespace RestaurantReservationNew.Db.Repositories
         public async Task<List<Reservation>> GetReservationsByCustomerAsync(int customerId)
         {
             return await _context.Reservations.Where(e => e.CustomerId==customerId).ToListAsync();
+        }
+
+        public async Task<List<ReservationWithDetails>> GetReservationsWithDetailsAsync()
+        {
+            return await _context.ReservationWithDetails.ToListAsync();
         }
     }
 }

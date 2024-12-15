@@ -12,6 +12,10 @@ namespace RestaurantReservationNew.Db.Repositories
         { 
             _context=context;
         }
+        public async Task<IEnumerable<Employee>> GetAllAsync()
+        {
+            return await _context.Employees.ToListAsync();
+        }
 
         public async Task CreateAsync(Employee employee)
         {
@@ -40,6 +44,10 @@ namespace RestaurantReservationNew.Db.Repositories
         public async Task<List<Employee>> ListManagersAsync()
         {
             return await _context.Employees.Where(tmp => tmp.Position=="Manager").ToListAsync();
+        }
+        public async Task<List<EmployeeWithRestaurant>> GetEmployeesWithRestaurantAsync()
+        {
+            return await _context.EmployeeWithRestaurant.ToListAsync();
         }
     }
 }

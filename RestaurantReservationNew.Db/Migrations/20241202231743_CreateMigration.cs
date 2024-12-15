@@ -343,6 +343,22 @@ namespace RestaurantReservationNew.Db.Migrations
                 name: "IX_Tables_RestaurantId",
                 table: "Tables",
                 column: "RestaurantId");
+            // Create a custom SQL function to calculate the total revenue for a specific restaurant
+            migrationBuilder.Sql(@"
+            CREATE OR ALTER FUNCTION dbo.CalculateRestaurantRevenue (@RestaurantId INT)
+            RETURNS DECIMAL(18, 2)
+            AS
+            BEGIN
+                DECLARE @Revenue DECIMAL(18, 2);
+
+                SELECT @Revenue = SUM(o.TotalAmount)
+                FROM Orders o
+                JOIN Reservations r ON o.ReservationId = r.ReservationId
+                WHERE r.RestaurantId = @RestaurantId;
+
+                RETURN ISNULL(@Revenue, 0);
+            END;
+            ");
         }
 
         /// <inheritdoc />
@@ -371,6 +387,9 @@ namespace RestaurantReservationNew.Db.Migrations
 
             migrationBuilder.DropTable(
                 name: "Restaurants");
+            // Drop the SQL function
+            migrationBuilder.Sql(
+                "DROP FUNCTION dbo.CalculateRestaurantRevenue");
         }
     }
 }

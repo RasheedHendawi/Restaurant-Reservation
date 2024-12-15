@@ -12,12 +12,12 @@ namespace RestaurantReservationNew.Db.Contexts
         public DbSet<Order> Orders { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
-
+        public DbSet<ReservationWithDetails> ReservationWithDetails { get; set; }
+        public DbSet<EmployeeWithRestaurant> EmployeeWithRestaurant { get; set; }
 
         public RestaurantReservationDbContext(DbContextOptions<RestaurantReservationDbContext> option)
             : base(option) 
         {
-
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -53,7 +53,7 @@ namespace RestaurantReservationNew.Db.Contexts
                 .HasOne(oi => oi.MenuItem)
                 .WithMany(mi => mi.OrderItems)
                 .HasForeignKey(oi => oi.ItemId);
-            //MenuItem
+
             modelBuilder.Entity<MenuItem>()
                 .HasKey(e => e.ItemId);
 
@@ -72,7 +72,6 @@ namespace RestaurantReservationNew.Db.Contexts
             modelBuilder.Entity<MenuItem>()
                 .Property(m => m.Price)
                 .HasColumnType("DECIMAL(18,2)");
-                //.HasPrecision(18,2);
 
             modelBuilder.Entity<Order>()
                 .Property(o => o.TotalAmount)
@@ -81,7 +80,18 @@ namespace RestaurantReservationNew.Db.Contexts
 
             base.OnModelCreating(modelBuilder);
 
-            // Seeding the data
+            modelBuilder.Entity<ReservationWithDetails>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("vw_ReservationsWithDetails");
+            });
+
+            modelBuilder.Entity<EmployeeWithRestaurant>(entity =>
+            {
+                entity.HasNoKey();
+                entity.ToView("vw_EmployeesWithRestaurant");
+            });
+
             modelBuilder.Entity<Customer>().HasData(
             new Customer { CustomerId = 1, FirstName = "John", LastName = "Doe", Email = "john.doe@example.com", PhoneNumber = "1234567890" },
             new Customer { CustomerId = 2, FirstName = "Jane", LastName = "Smith", Email = "jane.smith@example.com", PhoneNumber = "2345678901" },
@@ -90,7 +100,6 @@ namespace RestaurantReservationNew.Db.Contexts
             new Customer { CustomerId = 5, FirstName = "Tom", LastName = "Black", Email = "tom.black@example.com", PhoneNumber = "5678901234" }
             );
 
-            // Restaurants
             modelBuilder.Entity<Restaurant>().HasData(
                 new Restaurant { RestaurantId = 1, Name = "The Gourmet Spot", Address = "123 Main Street", PhoneNumber = "9876543210", OpeningHours = "9 AM - 10 PM" },
                 new Restaurant { RestaurantId = 2, Name = "Pizza Palace", Address = "456 Elm Street", PhoneNumber = "8765432109", OpeningHours = "11 AM - 11 PM" },
@@ -99,7 +108,6 @@ namespace RestaurantReservationNew.Db.Contexts
                 new Restaurant { RestaurantId = 5, Name = "Vegan Haven", Address = "654 Maple Street", PhoneNumber = "5432109876", OpeningHours = "8 AM - 8 PM" }
             );
 
-            // Tables
             modelBuilder.Entity<Table>().HasData(
                 new Table { TableId = 1, RestaurantId = 1, Capacity = 4 },
                 new Table { TableId = 2, RestaurantId = 1, Capacity = 2 },
@@ -108,7 +116,6 @@ namespace RestaurantReservationNew.Db.Contexts
                 new Table { TableId = 5, RestaurantId = 4, Capacity = 10 }
             );
 
-            // Employees
             modelBuilder.Entity<Employee>().HasData(
                 new Employee { EmployeeId = 1, RestaurantId = 1, FirstName = "Michael", LastName = "Johnson", Position = "Manager" },
                 new Employee { EmployeeId = 2, RestaurantId = 2, FirstName = "Emily", LastName = "Davis", Position = "Chef" },
@@ -117,7 +124,6 @@ namespace RestaurantReservationNew.Db.Contexts
                 new Employee { EmployeeId = 5, RestaurantId = 5, FirstName = "David", LastName = "Clark", Position = "Manager" }
             );
 
-            // MenuItems
             modelBuilder.Entity<MenuItem>().HasData(
                 new MenuItem { ItemId = 1, RestaurantId = 1, Name = "Burger", Description = "Delicious beef burger", Price = 8.99M },
                 new MenuItem { ItemId = 2, RestaurantId = 2, Name = "Pizza Margherita", Description = "Classic Italian pizza", Price = 10.99M },
@@ -126,7 +132,6 @@ namespace RestaurantReservationNew.Db.Contexts
                 new MenuItem { ItemId = 5, RestaurantId = 5, Name = "Vegan Salad", Description = "Healthy vegan salad", Price = 9.99M }
             );
 
-            // Reservations
             modelBuilder.Entity<Reservation>().HasData(
                 new Reservation { ReservationId = 1, CustomerId = 1, RestaurantId = 1, TableId = 1, ReservationDate = new DateTime(2024, 12, 3), PartySize = 4 },
                 new Reservation { ReservationId = 2, CustomerId = 2, RestaurantId = 2, TableId = 3, ReservationDate = new DateTime(2024, 12, 4), PartySize = 2 },
@@ -135,7 +140,6 @@ namespace RestaurantReservationNew.Db.Contexts
                 new Reservation { ReservationId = 5, CustomerId = 5, RestaurantId = 5, TableId = 2, ReservationDate = new DateTime(2024, 12, 7), PartySize = 10 }
             );
 
-            // Orders
             modelBuilder.Entity<Order>().HasData(
                 new Order { OrderId = 1, ReservationId = 1, EmployeeId = 1, OrderDate = new DateTime(2024, 12, 3), TotalAmount = 45.99M },
                 new Order { OrderId = 2, ReservationId = 2, EmployeeId = 2, OrderDate = new DateTime(2024, 12, 4), TotalAmount = 20.99M },
@@ -144,7 +148,6 @@ namespace RestaurantReservationNew.Db.Contexts
                 new Order { OrderId = 5, ReservationId = 5, EmployeeId = 5, OrderDate = new DateTime(2024, 12, 7), TotalAmount = 120.75M }
             );
 
-            // OrderItems
             modelBuilder.Entity<OrderItem>().HasData(
                 new OrderItem { OrderItemId = 1, OrderId = 1, ItemId = 1, Quantity = 2 },
                 new OrderItem { OrderItemId = 2, OrderId = 2, ItemId = 2, Quantity = 1 },

@@ -4,22 +4,27 @@ using RestaurantReservationNew.Db.Entities;
 
 namespace RestaurantReservationNew.Db.Repositories
 {
-    public class ResturantRepository
+    public class RestaurantRepository
     {
         private readonly RestaurantReservationDbContext _context;
 
-        public ResturantRepository(RestaurantReservationDbContext context) 
+        public RestaurantRepository(RestaurantReservationDbContext context) 
         {
             _context = context;
         }
 
-        public async Task<Restaurant> CreateResuaurantAsync(Restaurant restaurant)
+        public async Task<Restaurant> CreateAsync(Restaurant restaurant)
         {
             _context.Restaurants.Add(restaurant);
             await _context.SaveChangesAsync();
             return restaurant;
         }
-        public async Task<List<Restaurant>> GetAllRestaurantsAsync()
+        public async Task<Restaurant> GetByIdAsync(int id)
+        {
+            var tmp = await _context.Restaurants.FirstOrDefaultAsync(m => m.RestaurantId == id);
+            return tmp ?? throw new Exception("RestaurantId Not Found");
+        }
+        public async Task<IEnumerable<Restaurant>> GetAllAsync()
         {
             return await _context.Restaurants.ToListAsync();
         }
@@ -44,6 +49,14 @@ namespace RestaurantReservationNew.Db.Repositories
             return true;
 
         }
+        public async Task<decimal> GetTotalRevenueAsync(int restaurantId)
+        {
+            var sql = $"SELECT dbo.CalculateRestaurantRevenue({restaurantId})";
+            var revenue = await _context.Database.ExecuteSqlRawAsync(sql);
+
+            return Convert.ToDecimal(revenue);
+        }
+
 
     }
 }

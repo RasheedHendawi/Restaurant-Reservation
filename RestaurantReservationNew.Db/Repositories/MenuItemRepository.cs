@@ -17,6 +17,10 @@ namespace RestaurantReservationNew.Db.Repositories
             _context.MenuItems.Add(menuItem);
             await _context.SaveChangesAsync();
         }
+        public async Task<IEnumerable<MenuItem>> GetAllAsync()
+        {
+            return await _context.MenuItems.ToListAsync();
+        }
 
         public async Task<MenuItem> GetByIdAsync(int id)
         {
