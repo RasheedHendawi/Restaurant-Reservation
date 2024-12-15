@@ -51,11 +51,16 @@ namespace RestaurantReservationNew.Db.Repositories
         }
         public async Task<decimal> GetTotalRevenueAsync(int restaurantId)
         {
-            var sql = $"SELECT dbo.CalculateRestaurantRevenue({restaurantId})";
-            var revenue = await _context.Database.ExecuteSqlRawAsync(sql);
+            var connection = _context.Database.GetDbConnection();
+            await using var command = connection.CreateCommand();
+            command.CommandText = $"SELECT dbo.CalculateRestaurantRevenue({restaurantId})";
+            await _context.Database.OpenConnectionAsync();
 
-            return Convert.ToDecimal(revenue);
+            var result = await command.ExecuteScalarAsync();
+
+            return result != null ? Convert.ToDecimal(result) : 0;
         }
+
 
 
     }
