@@ -359,6 +359,18 @@ namespace RestaurantReservationNew.Db.Migrations
                 RETURN ISNULL(@Revenue, 0);
             END;
             ");
+            //create Procedure
+            migrationBuilder.Sql(@"
+            CREATE PROCEDURE GetCustomersWithLargePartySize
+            @PartySize INT
+            AS
+            BEGIN
+            SELECT DISTINCT c.CustomerId, c.FirstName, c.LastName, c.Email, c.PhoneNumber
+            FROM Reservations r
+            INNER JOIN Customers c ON r.CustomerId = c.CustomerId
+            WHERE r.PartySize > @PartySize
+            END;
+            ");
         }
 
         /// <inheritdoc />
@@ -390,6 +402,10 @@ namespace RestaurantReservationNew.Db.Migrations
             // Drop the SQL function
             migrationBuilder.Sql(
                 "DROP FUNCTION dbo.CalculateRestaurantRevenue");
+            //Drop Procdure
+            migrationBuilder.Sql(
+                "DROP PROCEDURE GetCustomersWithLargePartySize");
+
         }
     }
 }

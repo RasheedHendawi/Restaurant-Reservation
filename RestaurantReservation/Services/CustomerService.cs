@@ -48,5 +48,9 @@ namespace RestaurantReservation.Services
 
             await _customerRepository.DeleteAsync(customerId);
         }
+        public async Task<List<Customer>> GetCustomersWithLargePartySizeAsync(int partySize)
+        {
+            return await _customerRepository.GetCustomersWithLargePartySizeAsync(partySize);
+        }
     }
 }

@@ -67,7 +67,8 @@ while (!exit)
     Console.WriteLine("8. Show Reservation Details");
     Console.WriteLine("9. Show Employee Details");
     Console.WriteLine("10. Show Restaurant Revenue");
-    Console.WriteLine("11. Exit");
+    Console.WriteLine("11. Show Customers with Large Party Size");
+    Console.WriteLine("12. Exit");
 
     var input = Console.ReadLine();
 
@@ -145,6 +146,9 @@ while (!exit)
             await CalculateRestaurantRevenue();
             break;
         case "11":
+            await ShowCustomersWithLargePartySize();
+            break;
+        case "12":
             exit = true;
             Console.WriteLine("Exiting application...");
             break;
@@ -223,6 +227,18 @@ async Task CalculateRestaurantRevenue()
     else
     {
         Console.WriteLine("Invalid Restaurant ID. Please enter a valid number.");
+    }
+}
+async Task ShowCustomersWithLargePartySize()
+{
+    Console.Write("Enter the minimum party size: ");
+    if (int.TryParse(Console.ReadLine(), out int partySize))
+    {
+        await customerController.ShowCustomersWithLargePartySizeAsync(partySize);
+    }
+    else
+    {
+        Console.WriteLine("Invalid party size. Please enter a valid number.");
     }
 }
 

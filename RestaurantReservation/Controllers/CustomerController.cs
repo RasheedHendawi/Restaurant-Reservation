@@ -130,5 +130,14 @@ namespace RestaurantReservation.Controllers
                 Console.WriteLine("Invalid Customer ID.");
             }
         }
+        public async Task ShowCustomersWithLargePartySizeAsync(int partySize)
+        {
+            var customers = await _customerService.GetCustomersWithLargePartySizeAsync(partySize);
+            Console.WriteLine($"Customers with party size greater than {partySize}:");
+            foreach (var customer in customers)
+            {
+                Console.WriteLine($"ID: {customer.CustomerId}, Name: {customer.FirstName} {customer.LastName}, Email: {customer.Email}, Phone: {customer.PhoneNumber}");
+            }
+        }
     }
 }
